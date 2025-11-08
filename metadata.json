@@ -1,0 +1,7 @@
+{
+  "name": "IT Student Portal",
+  "description": "A modern, functional student portal for the Information Technology department, Faculty of Computing. It includes features for viewing courses, grades, announcements, and an AI-powered study buddy.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
