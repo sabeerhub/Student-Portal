@@ -7,6 +7,7 @@ import {
   addTimetableEntry, updateTimetableEntry,
   getAnnouncements, getCourses, getTimetable 
 } from '../services/dataService';
+import { getStudents } from '../services/authService';
 
 interface AdminDashboardProps {
   user: User;
@@ -20,6 +21,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
     const [announcements, setAnnouncements] = useState<Announcement[]>(() => getAnnouncements());
     const [courses, setCourses] = useState<Course[]>(() => getCourses());
     const [timetable, setTimetable] = useState<TimetableEntry[]>(() => getTimetable());
+    const [students] = useState<User[]>(() => getStudents());
   
     // Editing States
     const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
@@ -81,8 +83,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
         const availableColors = ['primary', 'secondary', 'accent', 'accent-yellow', 'accent-cyan'];
         const randomColor = availableColors[Math.floor(Math.random() * availableColors.length)];
 
-        // FIX: Add missing 'color' property to satisfy the Course type.
-        // A random color is assigned to new courses, while existing courses retain their color.
         const courseData: Course = { 
             code: courseCode, 
             title: courseTitle, 
@@ -138,7 +138,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
     const EditIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L16.732 3.732z" /></svg>;
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-8 min-h-screen bg-background">
       <header className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
@@ -219,6 +219,32 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
                     <ul className="text-sm space-y-2">{timetable.map((t) => <li key={t.id} className="flex justify-between items-center p-2 rounded-md hover:bg-card-light"><span className="truncate pr-2" title={`${t.courseTitle} at ${t.time}`}>{t.day.substring(0,3)} - {t.courseCode}</span><button onClick={() => handleEditTimetable(t)} className="p-1.5 bg-primary/50 text-white rounded-md hover:bg-primary"><EditIcon /></button></li>)}</ul>
                 </div>
              </div>
+        </div>
+
+        {/* Registered Students List */}
+        <div className="bg-card rounded-2xl shadow-lg p-6 md:col-span-2 lg:col-span-3">
+            <h3 className="text-xl font-bold text-text-primary border-b border-gray-600 pb-2 mb-4">Registered Students ({students.length})</h3>
+            <div className="max-h-96 overflow-y-auto">
+                <table className="w-full text-left">
+                    <thead className="sticky top-0 bg-card">
+                        <tr className="border-b border-card-light">
+                            <th className="py-3 px-4 text-text-secondary font-semibold text-sm uppercase tracking-wider">Registration No.</th>
+                            <th className="py-3 px-4 text-text-secondary font-semibold text-sm uppercase tracking-wider">Full Name</th>
+                            <th className="py-3 px-4 text-text-secondary font-semibold text-sm uppercase tracking-wider">Email</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-card-light">
+                        {students.map(student => (
+                            <tr key={student.id} className="hover:bg-card-light/50">
+                                <td className="py-3 px-4 font-mono text-sm text-text-primary">{student.registrationNumber}</td>
+                                <td className="py-3 px-4 text-text-secondary">{student.fullName}</td>
+                                <td className="py-3 px-4 text-text-secondary">{student.email}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                 {students.length === 0 && <p className="text-center text-text-muted py-8">No students have registered yet.</p>}
+            </div>
         </div>
       </main>
     </div>

@@ -80,3 +80,10 @@ export const getCurrentUser = (): User | null => {
 export const logout = () => {
     localStorage.removeItem(CURRENT_USER_KEY);
 };
+
+export const getStudents = (): User[] => {
+    const allUsers = getUsers();
+    return allUsers
+      .filter(user => user.role === 'student')
+      .sort((a, b) => a.registrationNumber.localeCompare(b.registrationNumber));
+};
